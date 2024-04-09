@@ -35,13 +35,22 @@ function Homepage() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        title,
-        content,
-        date,
+        note: {
+          title,
+          content,
+          date,
+        },
       }),
     });
+
     const data = await res.json();
-    setNotes(data.note);
+    if (data.note && data.note.title) {
+      setNotes([...notes, data.note]);
+    } else {
+      // Handle unexpected response structure
+      console.error("Unexpected response structure:", data);
+    }
+
     setTitle("");
     setContent("");
     setDate("");

@@ -2,34 +2,23 @@
 import { Hono } from "hono";
 import { handle } from "hono/aws-lambda";
 
+import { notes as notesTable } from "@my-sst-app/core/db/schema/notes";
+import { db } from "@my-sst-app/core/db";
 const app = new Hono();
 
-const fakeNotes = [
-  {
-    id: "1",
-    title: "First Note",
-    content: "This is the first note",
-    date: "2021-09-01",
-  },
-  {
-    id: "2",
-    title: "Second Note",
-    content: "This is the second note",
-    date: "2021-09-02",
-  },
-];
-app.get("/notes", (c) => {
-  return c.json({ notes: fakeNotes });
+app.get("/notes", async (c) => {
+  const notes = await db.select().from(notesTable);
+  return c.json({ notes });
 });
 
 app.post("/notes", async (c) => {
   const body = await c.req.json();
-
-  fakeNotes.push({
-    ...body,
-    id: (fakeNotes.length + 1).toString(),
-  });
-  return c.json({ note: fakeNotes });
+  const note = {
+    ...body.note,
+    userId: "user-1",
+  };
+  const newNote = await db.insert(notesTable).values(note).returning();
+  return c.json({ notes: newNote });
 });
 
 export const handler = handle(app);
