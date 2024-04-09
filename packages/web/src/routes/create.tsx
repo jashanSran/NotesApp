@@ -1,5 +1,10 @@
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import "./App.css";
+import "../index.css";
+
+export const Route = createFileRoute("/create")({
+  component: Create,
+});
 
 type Notes = {
   id: string;
@@ -7,7 +12,7 @@ type Notes = {
   content: string;
   date: string;
 };
-function App() {
+function Create() {
   const [notes, setNotes] = useState<Notes[]>([]);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -44,7 +49,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>My Notes</h1>
+      {/* <h1>My Notes</h1>
       <div className="notes-container">
         {notes.map((note) => (
           <div className="note-card" key={note.id}>
@@ -59,7 +64,7 @@ function App() {
             </div>
           </div>
         ))}
-      </div>
+      </div> */}
 
       <form onSubmit={handleSubmit}>
         <h2>Add Note</h2>
@@ -94,5 +99,3 @@ function App() {
     </div>
   );
 }
-
-export default App;

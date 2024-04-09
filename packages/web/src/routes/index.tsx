@@ -1,14 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import "../App.css";
+import "../index.css";
 
 export const Route = createFileRoute("/")({
   component: Homepage,
 });
-
-// function Homepage() {
-//   return <div className="p-2">Hello from homepage!</div>;
-// }
 
 type Notes = {
   id: string;
