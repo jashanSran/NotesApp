@@ -11,14 +11,16 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as CreateImport } from './routes/create'
+import { Route as ProfileImport } from './routes/profile'
 import { Route as AboutImport } from './routes/about'
+import { Route as AuthenticatedImport } from './routes/_authenticated'
 import { Route as IndexImport } from './routes/index'
+import { Route as AuthenticatedCreateImport } from './routes/_authenticated/create'
 
 // Create/Update Routes
 
-const CreateRoute = CreateImport.update({
-  path: '/create',
+const ProfileRoute = ProfileImport.update({
+  path: '/profile',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -27,9 +29,19 @@ const AboutRoute = AboutImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const AuthenticatedRoute = AuthenticatedImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const IndexRoute = IndexImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
+} as any)
+
+const AuthenticatedCreateRoute = AuthenticatedCreateImport.update({
+  path: '/create',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -40,13 +52,21 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/_authenticated': {
+      preLoaderRoute: typeof AuthenticatedImport
+      parentRoute: typeof rootRoute
+    }
     '/about': {
       preLoaderRoute: typeof AboutImport
       parentRoute: typeof rootRoute
     }
-    '/create': {
-      preLoaderRoute: typeof CreateImport
+    '/profile': {
+      preLoaderRoute: typeof ProfileImport
       parentRoute: typeof rootRoute
+    }
+    '/_authenticated/create': {
+      preLoaderRoute: typeof AuthenticatedCreateImport
+      parentRoute: typeof AuthenticatedImport
     }
   }
 }
@@ -55,8 +75,9 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren([
   IndexRoute,
+  AuthenticatedRoute.addChildren([AuthenticatedCreateRoute]),
   AboutRoute,
-  CreateRoute,
+  ProfileRoute,
 ])
 
 /* prettier-ignore-end */

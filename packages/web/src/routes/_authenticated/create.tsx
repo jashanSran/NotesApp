@@ -1,8 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import "../index.css";
+import "../../index.css";
 
-export const Route = createFileRoute("/create")({
+export const Route = createFileRoute("/_authenticated/create")({
   component: Create,
 });
 
@@ -13,6 +13,7 @@ type Notes = {
   date: string;
 };
 function Create() {
+  const navigate = useNavigate();
   const [notes, setNotes] = useState<Notes[]>([]);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -41,31 +42,22 @@ function Create() {
       }),
     });
     const data = await res.json();
-    setNotes(data.note);
+    if (data.note && data.note.title) {
+      setNotes([...notes, data.note]);
+    } else {
+      // Handle unexpected response structure
+      console.error("Unexpected response structure:", data);
+    }
+
     setTitle("");
     setContent("");
     setDate("");
+
+    navigate({ to: "/" });
   };
 
   return (
     <div className="App">
-      {/* <h1>My Notes</h1>
-      <div className="notes-container">
-        {notes.map((note) => (
-          <div className="note-card" key={note.id}>
-            <div className="note-title">
-              <strong>Title:</strong> {note.title}
-            </div>
-            <div className="note-content">
-              <strong>Content:</strong> {note.content}
-            </div>
-            <div className="note-date">
-              <strong>Date:</strong> {note.date}
-            </div>
-          </div>
-        ))}
-      </div> */}
-
       <form onSubmit={handleSubmit}>
         <h2>Add Note</h2>
         <label htmlFor="title">Title</label>
