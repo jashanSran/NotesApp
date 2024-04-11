@@ -1,5 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useKindeAuth } from "@kinde-oss/kinde-auth-react";
+
 import "../../index.css";
 
 export const Route = createFileRoute("/_authenticated/create")({
@@ -13,11 +15,13 @@ type Notes = {
   date: string;
 };
 function Create() {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
+  const { getToken } = useKindeAuth();
   const [notes, setNotes] = useState<Notes[]>([]);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [date, setDate] = useState("");
+  const navigate = useNavigate({ from: "/create" });
 
   useEffect(() => {
     async function getNotes() {
@@ -30,17 +34,30 @@ function Create() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Get the authorization token
+    const token = await getToken();
+    if (!token) {
+      console.error("No token found. Unable to submit the form.");
+      return; // Exit the function if no token is found
+    }
+
+    // Perform the POST request with the Authorization header
     const res = await fetch(import.meta.env.VITE_APP_API_URL + "/notes", {
       method: "POST",
       headers: {
+        Authorization: token,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        title,
-        content,
-        date,
+        note: {
+          title,
+          content,
+          date,
+        },
       }),
     });
+
     const data = await res.json();
     if (data.note && data.note.title) {
       setNotes([...notes, data.note]);
@@ -49,6 +66,7 @@ function Create() {
       console.error("Unexpected response structure:", data);
     }
 
+    // Reset form fields
     setTitle("");
     setContent("");
     setDate("");

@@ -28,12 +28,7 @@ export function API({ stack }: StackContext) {
         },
       },
       "Get /notes": "packages/functions/src/notes.handler",
-      "POST /notes": {
-        authorizer: "none",
-        function: {
-          handler: "packages/functions/src/notes.handler",
-        },
-      },
+      "POST /notes": "packages/functions/src/notes.handler",
     },
   });
 
