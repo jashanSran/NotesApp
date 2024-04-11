@@ -52,10 +52,19 @@ input[type="text"] {
   margin-bottom: 15px; /* Adds space between input fields */
 }
 
+.auth-msg {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
 button {
   background-color: green;
   border: none;
   border-radius: 4px;
+  width: auto;
+  margin: 5px 10px;
+  padding: 10px 20px;
   cursor: pointer;
   font-weight: bold;
 }
@@ -93,6 +102,10 @@ body {
   align-items: center;
   padding: 20px;
   color: blue;
+}
+/* active page have nav color change to orange */
+.nav-bar a.active {
+  color: purple;
 }
 
 .about-content,
