@@ -1,5 +1,5 @@
 import { Link, Outlet } from "@tanstack/react-router";
-
+import "../index.css";
 import { type QueryClient } from "@tanstack/react-query";
 
 import { createRootRouteWithContext } from "@tanstack/react-router";
@@ -16,7 +16,7 @@ function RootLayout() {
   const { isAuthenticated } = useKindeAuth();
   return (
     <>
-      <div className="p-2 flex gap-2">
+      <div className="nav-bar">
         <Link to="/" className="[&.active]:font-bold">
           Home
         </Link>
