@@ -15,7 +15,6 @@ type Notes = {
   date: string;
 };
 function Create() {
-  // const navigate = useNavigate();
   const { getToken } = useKindeAuth();
   const [notes, setNotes] = useState<Notes[]>([]);
   const [title, setTitle] = useState("");
