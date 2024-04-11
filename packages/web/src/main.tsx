@@ -21,6 +21,7 @@ declare module "@tanstack/react-router" {
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <KindeProvider
+      audience={import.meta.env.VITE_APP_KINDE_AUDIENCE}
       clientId="6d6f002f6bf145a58a72f422e9e22dd2"
       domain="https://mysstapp.kinde.com"
       logoutUri={window.location.origin}

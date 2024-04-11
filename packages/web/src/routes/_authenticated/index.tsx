@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useKindeAuth } from "@kinde-oss/kinde-auth-react";
 import "../../index.css";
 
 export const Route = createFileRoute("/_authenticated/")({
@@ -13,6 +14,7 @@ type Notes = {
   date: string;
 };
 function Homepage() {
+  const { getToken } = useKindeAuth();
   const [notes, setNotes] = useState<Notes[]>([]);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -20,15 +22,40 @@ function Homepage() {
 
   useEffect(() => {
     async function getNotes() {
-      const res = await fetch(import.meta.env.VITE_APP_API_URL + "/notes");
-      const data = await res.json();
-      setNotes(data.notes);
+      try {
+        const token = await getToken();
+        if (!token) {
+          throw new Error("No token found");
+        }
+        const res = await fetch(import.meta.env.VITE_APP_API_URL + "/notes", {
+          headers: {
+            Authorization: token,
+          },
+        });
+        if (!res.ok) {
+          throw new Error(`HTTP error! Status: ${res.status}`);
+        }
+        const data = await res.json();
+        console.log("Fetched data:", data); // Log the fetched data
+        if (Array.isArray(data.notes)) {
+          setNotes(data.notes);
+        } else {
+          console.error(
+            "Expected data.notes to be an array, received:",
+            data.notes
+          );
+        }
+      } catch (error) {
+        console.error("Failed to fetch notes:", error);
+      }
     }
+
     getNotes();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     const res = await fetch(import.meta.env.VITE_APP_API_URL + "/notes", {
       method: "POST",
       headers: {

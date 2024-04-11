@@ -1,8 +1,19 @@
 import { StackContext, Api, StaticSite } from "sst/constructs";
 
 export function API({ stack }: StackContext) {
+  const audience = `api-NotesApp-jashan`;
   const api = new Api(stack, "api", {
+    authorizers: {
+      myAuthorizer: {
+        type: "jwt",
+        jwt: {
+          issuer: "https://mysstapp.kinde.com",
+          audience: [audience],
+        },
+      },
+    },
     defaults: {
+      authorizer: "myAuthorizer",
       function: {
         environment: {
           DRIZZLE_DATABASE_URL: process.env.DRIZZLE_DATABASE_URL!,
@@ -10,9 +21,19 @@ export function API({ stack }: StackContext) {
       },
     },
     routes: {
-      "GET /": "packages/functions/src/lambda.handler",
+      "GET /": {
+        authorizer: "none",
+        function: {
+          handler: "packages/functions/src/lambda.handler",
+        },
+      },
       "Get /notes": "packages/functions/src/notes.handler",
-      "POST /notes": "packages/functions/src/notes.handler",
+      "POST /notes": {
+        authorizer: "none",
+        function: {
+          handler: "packages/functions/src/notes.handler",
+        },
+      },
     },
   });
 
@@ -22,6 +43,7 @@ export function API({ stack }: StackContext) {
     buildCommand: "npm run build",
     environment: {
       VITE_APP_API_URL: api.url,
+      VITE_APP_KINDE_AUDIENCE: audience,
     },
   });
 
